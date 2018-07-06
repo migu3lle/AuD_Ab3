@@ -72,6 +72,7 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
             return root.getKeys().get(i).toString();
 
         }
+            i++;
         }
         return null;
     }
