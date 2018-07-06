@@ -66,7 +66,13 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
     @Override
     public String contains(int key) throws IllegalStateException {
         if (called == 0) throw new IllegalStateException();
-        int i = 0;
+        int i=0;
+        while (i<size){
+        if(root.getKeys().get(i)==key){
+            return root.getKeys().get(i).toString();
+
+        }
+        }
         return null;
     }
 
