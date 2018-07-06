@@ -3,6 +3,7 @@ package ab3.impl.GagglGundackerKopali;
 import ab3.BNode;
 import ab3.BTreeMap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BTreeMapImpl extends BNode implements BTreeMap {
@@ -18,13 +19,13 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
 
 
 
+
     public BTreeMapImpl() {
         root = new BNode();
         key = new int[maxVal];
         leaf = true;
         children = new BNode[maxVal];
         size=size();
-
     }
 
     @Override
@@ -49,8 +50,11 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
     @Override
     public boolean put(int key, String value) throws IllegalStateException, IllegalArgumentException {
         if (called == 0) throw new IllegalStateException();
+        List<KeyValuePair> x=new ArrayList<>();//Thats how it will work?
+        x.add(new KeyValuePair(key,value));
+        root.setKeyValuePairs(x);
 
-        return false;
+        return true;
     }
 
     @Override
@@ -65,6 +69,7 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
         int i = 0;
         return null;
     }
+
 
     @Override
     public BNode getRoot() throws IllegalStateException {
