@@ -16,11 +16,14 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
     private int key[];
 
 
+
+
     public BTreeMapImpl() {
         root = new BNode();
         key = new int[maxVal];
         leaf = true;
         children = new BNode[maxVal];
+        size=size();
 
     }
 
@@ -46,6 +49,7 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
     @Override
     public boolean put(int key, String value) throws IllegalStateException, IllegalArgumentException {
         if (called == 0) throw new IllegalStateException();
+
         return false;
     }
 
@@ -59,26 +63,25 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
     public String contains(int key) throws IllegalStateException {
         if (called == 0) throw new IllegalStateException();
         int i = 0;
-
         return null;
     }
 
     @Override
     public BNode getRoot() throws IllegalStateException {
         if (called == 0) throw new IllegalStateException();
-        return null;
+        return root;
     }
 
     @Override
     public List<Integer> getKeys() throws IllegalStateException {
         if (called == 0) throw new IllegalStateException();
-        return null;
+        return root.getKeys();
     }
 
     @Override
     public List<String> getValues() throws IllegalStateException {
         if (called == 0) throw new IllegalStateException();
-        return null;
+        return root.getValues();
     }
 
     @Override
