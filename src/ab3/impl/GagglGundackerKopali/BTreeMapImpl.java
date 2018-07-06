@@ -53,6 +53,7 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
         List<KeyValuePair> x=new ArrayList<>();//Thats how it will work?
         x.add(new KeyValuePair(key,value));
         root.setKeyValuePairs(x);
+        size++;
 
         return true;
     }
