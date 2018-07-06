@@ -50,10 +50,12 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
     @Override
     public boolean put(int key, String value) throws IllegalStateException, IllegalArgumentException {
         if (called == 0) throw new IllegalStateException();
+
         List<KeyValuePair> x=new ArrayList<>();//Thats how it will work?
         x.add(new KeyValuePair(key,value));
         root.setKeyValuePairs(x);
         size++;
+        
 
         return true;
     }
