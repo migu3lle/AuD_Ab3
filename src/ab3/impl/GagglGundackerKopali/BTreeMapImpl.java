@@ -11,6 +11,10 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
     private int size;
     private BNode root;
 
+    public BTreeMapImpl(){
+
+    }
+
     @Override
     public void setMinDegree(int t) throws IllegalStateException, IllegalArgumentException {
         if(t<2) throw new IllegalArgumentException("Must be greater than 2");
@@ -34,6 +38,8 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
     @Override
     public String contains(int key) throws IllegalStateException {
         if(called==0)throw new IllegalStateException();
+        int i=0;
+
         return null;
     }
 
@@ -59,7 +65,6 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
     public void clear() {
         called=0;
         size=0;
-        root = new BNode();
 
     }
 
