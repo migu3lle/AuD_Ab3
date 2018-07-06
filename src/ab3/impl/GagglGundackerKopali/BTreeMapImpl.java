@@ -5,15 +5,23 @@ import ab3.BTreeMap;
 
 import java.util.List;
 
-public class BTreeMapImpl implements BTreeMap {
+public class BTreeMapImpl extends BNode implements BTreeMap {
+    private int minimalVal;
+    private int called =0;
+    private int size;
+    private BNode root;
 
     @Override
     public void setMinDegree(int t) throws IllegalStateException, IllegalArgumentException {
-
+        if(t<2) throw new IllegalArgumentException("Must be greater than 2");
+        if(called!=0) throw new IllegalStateException("Already called");//checking if it is called, this called value will be changed also at clear method
+        minimalVal=t-1;//Setting the minimal value
+        called++;
     }
 
     @Override
     public boolean put(int key, String value) throws IllegalStateException, IllegalArgumentException {
+        if(called==0)throw new IllegalStateException();
         return false;
     }
 
@@ -44,11 +52,15 @@ public class BTreeMapImpl implements BTreeMap {
 
     @Override
     public void clear() {
+        called=0;
+        size=0;
+        root = new BNode();
 
     }
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
+
 }
