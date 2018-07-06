@@ -27,26 +27,31 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
 
     @Override
     public boolean delete(int key) throws IllegalStateException, IllegalArgumentException {
+        if(called==0)throw new IllegalStateException();
         return false;
     }
 
     @Override
     public String contains(int key) throws IllegalStateException {
+        if(called==0)throw new IllegalStateException();
         return null;
     }
 
     @Override
     public BNode getRoot() throws IllegalStateException {
+        if(called==0)throw new IllegalStateException();
         return null;
     }
 
     @Override
     public List<Integer> getKeys() throws IllegalStateException {
+        if(called==0)throw new IllegalStateException();
         return null;
     }
 
     @Override
     public List<String> getValues() throws IllegalStateException {
+        if(called==0)throw new IllegalStateException();
         return null;
     }
 
