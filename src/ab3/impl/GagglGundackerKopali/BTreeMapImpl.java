@@ -7,19 +7,20 @@ import java.util.List;
 
 public class BTreeMapImpl extends BNode implements BTreeMap {
     private int minimalVal;
+    private int maxVal;
     private int called = 0;
     private int size;
     private BNode root;
-    private int children;
+    private BNode children[];
     private boolean leaf;
     private int key[];
 
 
     public BTreeMapImpl() {
-        root=new BNode();
-        key= new int[minimalVal];
+        root = new BNode();
+        key = new int[maxVal];
         leaf = true;
-        children = 0;
+        children = new BNode[maxVal];
 
     }
 
@@ -28,7 +29,17 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
         if (t < 2) throw new IllegalArgumentException("Must be greater than 2");
         if (called != 0)
             throw new IllegalStateException("Already called");//checking if it is called, this called value will be changed also at clear method
+        setMaxDegree(t);
         minimalVal = t - 1;//Setting the minimal value
+        called++;
+    }
+
+    private void setMaxDegree(int t) throws IllegalStateException, IllegalArgumentException {
+        if (t < 2) throw new IllegalArgumentException("Must be greater than 2");
+        if (called != 0)
+            throw new IllegalStateException("Already called");//checking if it is called, this called value will be changed also at clear method
+
+        maxVal = 2*t-1;//Setting the maximal value
         called++;
     }
 
