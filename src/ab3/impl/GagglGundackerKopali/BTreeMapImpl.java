@@ -171,12 +171,13 @@ public class BTreeMapImpl implements BTreeMap {
             nodeList.remove(currNode);
             parentNode.setChildren(tempNewChilds);  //Re-define parent's children list
             currNode = parentNode;
-
+            //TODO need to know parent of the parent...
         }
         //Need to split parent before integrating new root to it's parent
         else if(parentNode != null){
             split(parentNode);
             currNode = parentNode;
+            //TODO need to know parent of the parent...
         }
 
     }
