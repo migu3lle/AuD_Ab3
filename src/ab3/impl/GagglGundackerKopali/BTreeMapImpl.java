@@ -3,6 +3,7 @@ package ab3.impl.GagglGundackerKopali;
 import ab3.BNode;
 import ab3.BTreeMap;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class BTreeMapImpl extends BNode implements BTreeMap {
@@ -46,6 +47,40 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
     @Override
     public boolean put(int key, String value) throws IllegalStateException, IllegalArgumentException {
         if (called == 0) throw new IllegalStateException();
+
+
+        KeyValuePair keyValuePair = new KeyValuePair(key,value);
+
+        if(size == 0){
+            //Erstelle eine neue Liste von keyValuePairs und übergib sie dem Root-Node, der Liste wird das einzufügende keyvaluepair hinzugefügt
+            List<KeyValuePair> keyValuePairsList = new LinkedList<KeyValuePair>();
+            List<BNode> childs = new LinkedList<BNode>();
+            keyValuePairsList.add(keyValuePair);
+            root.setKeyValuePairs(keyValuePairsList);
+            root.setChildren(childs);
+            size++;
+        }else{
+            BNode currentNode = root;
+            while(currentNode != null){
+                if(currentNode.getChildren().size() == 0){
+                    currentNode.getKeyValuePairs().add(keyValuePair);
+
+                    if(currentNode.getKeyValuePairs().size() <= maxVal){
+
+                        break;
+                    }
+
+                }
+
+            }
+
+
+
+
+        }
+
+
+
         return false;
     }
 
