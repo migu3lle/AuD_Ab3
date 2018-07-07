@@ -3,6 +3,8 @@ package ab3.impl.GagglGundackerKopali;
 import ab3.BNode;
 import ab3.BTreeMap;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,40 +50,90 @@ public class BTreeMapImpl extends BNode implements BTreeMap {
     public boolean put(int key, String value) throws IllegalStateException, IllegalArgumentException {
         if (called == 0) throw new IllegalStateException();
 
-
         KeyValuePair keyValuePair = new KeyValuePair(key,value);
 
         if(size == 0){
             //Erstelle eine neue Liste von keyValuePairs und übergib sie dem Root-Node, der Liste wird das einzufügende keyvaluepair hinzugefügt
-            List<KeyValuePair> keyValuePairsList = new LinkedList<KeyValuePair>();
-            List<BNode> childs = new LinkedList<BNode>();
+            List<KeyValuePair> keyValuePairsList = new ArrayList<>();
+            List<BNode> childs = new ArrayList<>();
             keyValuePairsList.add(keyValuePair);
             root.setKeyValuePairs(keyValuePairsList);
             root.setChildren(childs);
             size++;
         }else{
+
+            searchCorrectLeaf();
+
             BNode currentNode = root;
-            while(currentNode != null){
-                if(currentNode.getChildren().size() == 0){
-                    currentNode.getKeyValuePairs().add(keyValuePair);
+            //Wenn die Wurzel voll ist dann muss aufgespalten werden
+            if(currentNode.getKeyValuePairs().size() == maxVal){
+                BNode newRoot = new BNode();
+                newRoot.setChildren(Arrays.asList(root));
 
-                    if(currentNode.getKeyValuePairs().size() <= maxVal){
+                List<KeyValuePair> keyValuePairList = new ArrayList<>();
+                int middleIndex = root.getKeyValuePairs().size();
+                keyValuePairList.add(root.getKeyValuePairs().get(middleIndex));
+                newRoot.setKeyValuePairs(keyValuePairList);
 
-                        break;
+
+
+
+
+            }
+
+
+                if(currentNode.getChildren() == null){
+                    for (KeyValuePair k : currentNode.getKeyValuePairs()){
+                       if(key > k.getKey()){
+                           currentNode.getKeyValuePairs().add(keyValuePair);
+
+                           size++;
+                       }else if(key < k.getKey()){
+
+                       }
                     }
 
+
+
+
+
                 }
+
 
             }
 
 
 
 
+
+
+        return false;
+    }
+
+    private void searchCorrectLeaf() {
+        BNode currentNode = root;
+        if(currentNode.getKeyValuePairs().size() == maxVal){
+            split();
+        }
+
+        while(currentNode != null){
+            for (KeyValuePair k : currentNode.getKeyValuePairs()){
+                
+
+            }
+
         }
 
 
 
-        return false;
+
+
+    }
+
+    //Helper Method to split up when a node is full
+    private void split() {
+
+
     }
 
     @Override
