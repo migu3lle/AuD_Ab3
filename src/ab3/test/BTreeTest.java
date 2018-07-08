@@ -41,25 +41,12 @@ public class BTreeTest {
     public void put2Test(){
         tree.setMinDegree(2);
 
-        tree.put(1, "Eins");
-        tree.printRecursive(tree.getRoot());
-        tree.put(2, "Zwei");
-        tree.printRecursive(tree.getRoot());
-        tree.put(3, "Drei");
-        tree.printRecursive(tree.getRoot());
-        tree.put(4, "Vier");
-        tree.printRecursive(tree.getRoot());
-        tree.put(5, "Fünf");
-        tree.printRecursive(tree.getRoot());
-        tree.put(6, "Sechs");
-        tree.printRecursive(tree.getRoot());
-        tree.put(7, "Sieben");
-        tree.printRecursive(tree.getRoot());
-        tree.put(8, "Acht");
-        tree.printRecursive(tree.getRoot());
-        tree.put(9, "Neun");
-        tree.printRecursive(tree.getRoot());
-        tree.put(10, "Zehn");
-        tree.printRecursive(tree.getRoot());
+        for (int i = 1; i <= 10; i++) {
+            System.out.println("------ Now putting element " + i + " --------");
+            tree.put(i, i+"");
+            tree.printElements();
+
+            tree.getKeys();
+        }
     }
 }

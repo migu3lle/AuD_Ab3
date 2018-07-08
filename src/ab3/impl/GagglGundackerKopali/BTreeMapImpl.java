@@ -2,11 +2,8 @@ package ab3.impl.GagglGundackerKopali;
 
 import ab3.BNode;
 import ab3.BTreeMap;
-import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class BTreeMapImpl implements BTreeMap {
     private int minDegree;
@@ -23,6 +20,8 @@ public class BTreeMapImpl implements BTreeMap {
     //Internal lists which are filled immediately when adding a node or KeyValuePair
     private List<BNode> nodeList = new ArrayList<>();
     private List<BNode.KeyValuePair> keyValuePairList = new ArrayList<>();
+
+    HashMap<BNode, BNode> nodeParentMap = new HashMap<>();
 
     @Override
     public void setMinDegree(int t) throws IllegalStateException, IllegalArgumentException {
@@ -55,7 +54,11 @@ public class BTreeMapImpl implements BTreeMap {
         if (root == null) {
             //If tree is empty create root node with one KeyValuePair
             root = new BNode();
+            if(nodeList == null) {
+                nodeList = new ArrayList<>();
+            }
             nodeList.add(root);
+            nodeParentMap.put(root, null);  //root has no parent
             insert(root, 0, keyValuePair);
             return true;
         }
@@ -90,6 +93,7 @@ public class BTreeMapImpl implements BTreeMap {
 
     //Helper method to insert to nodes
     public boolean put(BNode.KeyValuePair element) {
+        System.out.println("CurrNode: " + currNode.getValues());
 
         //No children and free space --> put to currNode
         if((currNode.getChildren() == null || currNode.getChildren().isEmpty()) && currNode.getKeys().size() < maxNodeKeys){
@@ -126,25 +130,40 @@ public class BTreeMapImpl implements BTreeMap {
         nodeList.add(rightNode);
 
         List<BNode.KeyValuePair> keyValuePairs = nodeToSpilt.getKeyValuePairs();
+        List<BNode> children = nodeToSpilt.getChildren();
         List<BNode.KeyValuePair> leftPairs = new ArrayList<>();
         List<BNode.KeyValuePair> rightPairs = new ArrayList<>();
         List<BNode.KeyValuePair> rootPairs = new ArrayList<>();
         List<BNode> newChildren = new ArrayList<>();
+        List<BNode> newLeftChildren = new ArrayList<>();
+        List<BNode> newRightChildren = new ArrayList<>();
 
 
         //Fill left node with KeyValuePairs
         for (int i = 0; i < getMedianIndex(nodeToSpilt); i++) {
             System.out.println("adding element " + keyValuePairs.get(i).getValue() + " to left node");
             leftPairs.add(keyValuePairs.get(i));
-            leftNode.setKeyValuePairs(leftPairs);
         }
+        if(children != null && !children.isEmpty()){
+            for (int i = 0; i <= getMedianIndex(nodeToSpilt); i++) {
+                newLeftChildren.add(children.get(i));
+            }
+        }
+        leftNode.setKeyValuePairs(leftPairs);
+        leftNode.setChildren(newLeftChildren);
 
         //Fill right node with KeyValuePairs
         for (int i = getMedianIndex(nodeToSpilt)+1; i < keyValuePairs.size(); i++) {
             System.out.println("adding element " + keyValuePairs.get(i).getValue() + " to right node");
             rightPairs.add(keyValuePairs.get(i));
-            rightNode.setKeyValuePairs(rightPairs);
         }
+        if(children != null && !children.isEmpty()){
+            for (int i = getMedianIndex(nodeToSpilt)+1; i <= keyValuePairs.size(); i++) {
+                newRightChildren.add(children.get(i));
+            }
+        }
+        rightNode.setKeyValuePairs(rightPairs);
+        rightNode.setChildren(newRightChildren);
 
         //Add median to rootPairs
         rootPairs.add(keyValuePairs.get(getMedianIndex(nodeToSpilt)));
@@ -156,6 +175,10 @@ public class BTreeMapImpl implements BTreeMap {
             newChildren.add(leftNode);
             newChildren.add(rightNode);
             nodeToSpilt.setChildren(newChildren);
+            //Store information about parents in hashmap
+            nodeParentMap.put(nodeToSpilt, null);
+            nodeParentMap.put(leftNode, nodeToSpilt);
+            nodeParentMap.put(rightNode, nodeToSpilt);
         }
         //Median to be integrated in it's parent node
         else if(parentNode != null && parentNode.getKeys().size() < maxNodeKeys){
@@ -168,15 +191,20 @@ public class BTreeMapImpl implements BTreeMap {
             tempNewChilds.add(parentNode.getChildren().indexOf(currNode), leftNode);    //Moves index of currNode to the right
             tempNewChilds.add(parentNode.getChildren().indexOf(currNode), rightNode);   //Moves index of currNode to the right
             tempNewChilds.remove(parentNode.getChildren().indexOf(currNode));
+            nodeParentMap.put(leftNode, parentNode);
+            nodeParentMap.put(rightNode, parentNode);
             nodeList.remove(currNode);
             parentNode.setChildren(tempNewChilds);  //Re-define parent's children list
             currNode = parentNode;
+            parentNode = nodeParentMap.get(parentNode);
             //TODO need to know parent of the parent...
         }
         //Need to split parent before integrating new root to it's parent
         else if(parentNode != null){
-            split(parentNode);
             currNode = parentNode;
+            parentNode = nodeParentMap.get(currNode);
+            split(currNode);
+
             //TODO need to know parent of the parent...
         }
 
@@ -197,6 +225,9 @@ public class BTreeMapImpl implements BTreeMap {
         }
         tempElements.add(index, element);
         node.setKeyValuePairs(tempElements);
+        if(keyValuePairList == null){
+            keyValuePairList = new ArrayList<>();
+        }
         keyValuePairList.add(element);
     }
 
@@ -240,22 +271,99 @@ public class BTreeMapImpl implements BTreeMap {
 
     @Override
     public BNode getRoot() throws IllegalStateException {
-        if (called == 0) throw new IllegalStateException();
+        if (called == 0) {
+            throw new IllegalStateException();
+        }
         return root;
     }
 
     @Override
     public List<Integer> getKeys() throws IllegalStateException {
-        if (called == 0) throw new IllegalStateException();
+        if (called == 0){
+            throw new IllegalStateException();
+        }
+        List<Integer> keyList = new ArrayList<>();
+
+        /*
+        List<BNode.KeyValuePair> keyValuePairList = new ArrayList<>();
+        BNode currNode = root;
+        keyValuePairList = collectKeys(currNode);
+
+        for (BNode.KeyValuePair pair : keyValuePairList) {
+            keyList.add(pair.getKey());
+        }*/
+        for (BNode.KeyValuePair pair : keyValuePairList) {
+            keyList.add(pair.getKey());
+        }
+        keyList = this.rmDupKeys(keyList);
+        return keyList;
+    }
+
+    private List<Integer> rmDupKeys(List<Integer> list){
+            // Store unique items in result.
+            ArrayList<Integer> result = new ArrayList<>();
+
+            // Record encountered Strings in HashSet.
+            HashSet<Integer> set = new HashSet<>();
+
+            // Loop over argument list.
+            for (Integer item : list) {
+
+                // If String is not in set, add it to the list and the set.
+                if (!set.contains(item)) {
+                    result.add(item);
+                    set.add(item);
+                }
+            }
+            return result;
+    }
+
+    private List<String> rmDupVals(List<String> list){
+        // Store unique items in result.
+        ArrayList<String> result = new ArrayList<>();
+
+        // Record encountered Strings in HashSet.
+        HashSet<String> set = new HashSet<>();
+
+        // Loop over argument list.
+        for (String item : list) {
+
+            // If String is not in set, add it to the list and the set.
+            if (!set.contains(item)) {
+                result.add(item);
+                set.add(item);
+            }
+        }
+        return result;
+    }
 
 
-        return null;
+    private List<BNode.KeyValuePair> collectKeys(BNode node) {
+        List<BNode.KeyValuePair> keyValuePairs = new ArrayList<>();
+        keyValuePairs.addAll(node.getKeyValuePairs());  //Add own elements
+
+        List<BNode> childList = node.getChildren();
+
+        if (childList != null && !childList.isEmpty()) {
+            for (BNode childNode : childList) {
+                collectKeys(childNode);
+            }
+        }
+        return keyValuePairs;
     }
 
     @Override
     public List<String> getValues() throws IllegalStateException {
-        if (called == 0) throw new IllegalStateException();
-        return null;
+        if (called == 0){
+            throw new IllegalStateException();
+        }
+        List<String> keyList = new ArrayList<>();
+
+        for (BNode.KeyValuePair pair : keyValuePairList) {
+            keyList.add(pair.getValue());
+        }
+        keyList = rmDupVals(keyList);
+        return keyList;
     }
 
     @Override
@@ -273,7 +381,7 @@ public class BTreeMapImpl implements BTreeMap {
 
     @Override
     public int size() {
-        return size;
+        return getKeys().size();
     }
 
     public void printElements(){
